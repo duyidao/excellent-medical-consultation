@@ -1,5 +1,5 @@
 import './assets/main.css'
-
+import persist from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 // 样式全局使用
@@ -11,7 +11,8 @@ import router from './router'
 
 const app = createApp(App)
 
-app.use(createPinia())
+// pinia实现数据持久化
+app.use(createPinia().use(persist))
 app.use(router)
 
 app.mount('#app')

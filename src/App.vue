@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { Button as VanButton } from 'vant'
+import { useUserStore } from './stores/user'
+
+const store = useUserStore()
+
+store.setUser({
+  token: '12345',
+  id: '1',
+  account: 'daodao',
+  mobile: '18898664929',
+  avatar: ''
+})
 </script>
 
 <template>
-  <van-button type="primary">按钮</van-button>
-  <a href="#">123</a>
+  <div>{{ store.user }}</div>
+  <van-button type="primary" @click="store.delUser">退出</van-button>
 </template>
 
 <style lang="scss" scoped>
