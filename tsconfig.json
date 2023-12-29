@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "es2020",
+    "target": "esnext",
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "types": ["webpack-env", "vite/client", "vue-router", "vite-plugin-dts", "@vitejs/plugin-vue"]
+  },
+  "files": [],
+  "include": [
+    "env.d.ts",
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
+}
