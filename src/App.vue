@@ -2,7 +2,7 @@
 import { request } from '@/utils/network/index'
 import { Button as VanButton } from 'vant'
 import { useUserStore } from './stores'
-import type {User} from '@/types/user'
+import type { User } from '@/types/user'
 
 const store = useUserStore()
 
@@ -21,11 +21,7 @@ const getUserInfo = async () => {
 </script>
 
 <template>
-  <div>{{ store.user }}</div>
-  <van-button type="primary"
-    @click="login">登录</van-button>
-    <van-button type="primary"
-    @click="getUserInfo">获取用户信息</van-button>
+    <router-view></router-view>
 </template>
 
 <style lang="scss" scoped>
