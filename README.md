@@ -78,6 +78,7 @@ mkdir styles views services types utils
 1. 引入需要的依赖，如 `sass` 、`vant` 等
 2. 在 `styles` 下新建一个 `main.scss` 文件，用于设置基础样式，修改覆盖 `vant` 的基础样式
 3. `axios` 二次封装，并封装一个请求工具函数
+4. 路由表的搭建
 
 ## 提交规范
 |命令|含义|
