@@ -1,5 +1,30 @@
 <script setup lang="ts">
 import MyNavBar from '@/components/MyNavBar.vue';
+import { mobileRules, passwordRules } from '@/utils/rules'
+import { showToast, showSuccessToast } from 'vant';
+import { ref } from 'vue';
+import { login } from '@/services/user'
+import { useUserStore } from '@/stores/index'
+import { useRouter, useRoute } from 'vue-router'
+
+const store = useUserStore()
+const router = useRouter()
+const route = useRoute()
+
+const data = ref<{ mobile: string, password: string }>({
+    mobile: '13230000001',
+    password: 'abc12345',
+})
+const check = ref<boolean>(false)
+
+// 登录操作
+const submitFn = async () => {
+    if (!check.value) return showToast('请先勾选用户协议')
+    const res = await login(data.value)
+    store.setUser(res.data) // 保存数据
+    router.replace((route.query.returnUrl as string) || '/') // 返回来的路由或直接去往首页
+    showSuccessToast('登录成功')
+}
 </script>
 
 <template>
@@ -15,13 +40,20 @@ import MyNavBar from '@/components/MyNavBar.vue';
             </a>
         </div>
         <!-- 表单 -->
-        <van-form autocomplete="off">
+        <van-form autocomplete="off"
+            @submit="submitFn">
             <van-field placeholder="请输入手机号"
-                type="tel"></van-field>
+                required
+                v-model="data.mobile"
+                type="tel"
+                :rules="mobileRules" />
             <van-field placeholder="请输入密码"
-                type="password"></van-field>
+                required
+                type="password"
+                v-model="data.password"
+                :rules="passwordRules" />
             <div class="cp-cell">
-                <van-checkbox>
+                <van-checkbox v-model="check">
                     <span>我已同意</span>
                     <a href="javascript:;">用户协议</a>
                     <span>及</span>
@@ -31,7 +63,10 @@ import MyNavBar from '@/components/MyNavBar.vue';
             <div class="cp-cell">
                 <van-button block
                     round
-                    type="primary">登 录</van-button>
+                    type="primary"
+                    native-type="submit">
+                    登 录
+                </van-button>
             </div>
             <div class="cp-cell">
                 <a href="javascript:;">忘记密码？</a>
@@ -41,6 +76,8 @@ import MyNavBar from '@/components/MyNavBar.vue';
         <div class="login-other">
             <van-divider>第三方登录</van-divider>
             <div class="icon">
+                <img src="@/assets/qq.svg"
+                    alt="" />
             </div>
         </div>
     </div>
@@ -112,5 +149,6 @@ import MyNavBar from '@/components/MyNavBar.vue';
             color: rgba(22, 194, 163, 0.5);
         }
     }
-}</style>
+}
+</style>
 

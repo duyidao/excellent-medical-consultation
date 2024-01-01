@@ -10,6 +10,9 @@
   "files": [],
   "include": [
     "env.d.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/**/*.ts",
   ],
   "references": [
     {

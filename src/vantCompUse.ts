@@ -1,4 +1,4 @@
-import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider } from 'vant';
+import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider, Toast } from 'vant';
 
 export default (app: any) => {
     app.use(NavBar);
@@ -9,4 +9,5 @@ export default (app: any) => {
     app.use(Button);
     app.use(Form);
     app.use(Divider);
+    app.use(Toast);
 }
