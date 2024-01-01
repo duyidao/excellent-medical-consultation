@@ -10,7 +10,8 @@ const router = createRouter({
       children: [
         {
           redirect: 'home',
-          path: ''
+          path: '',
+          name: 'default'
         },
         { // 首页
           path: 'home',

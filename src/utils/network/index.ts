@@ -14,6 +14,7 @@ instance.interceptors.request.use(
     headerToken.onRejected
 )
 
+// 响应状态码封装
 instance.interceptors.response.use(
     rejectCode.onFulfilled,
     rejectCode.onRejected
