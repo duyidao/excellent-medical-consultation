@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import MyNavBar from '@/components/MyNavBar.vue';
-import { mobileRules, passwordRules } from '@/utils/rules'
-import { showToast, showSuccessToast } from 'vant';
-import { ref } from 'vue';
-import { login } from '@/services/user'
+import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
+import { showToast, showSuccessToast, type FormInstance } from 'vant';
+import { ref, onUnmounted } from 'vue';
+import { login, getCode } from '@/services/user'
 import { useUserStore } from '@/stores/index'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -11,11 +11,43 @@ const store = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
-const data = ref<{ mobile: string, password: string }>({
+const data = ref<{ mobile: string, password: string, code: string }>({
     mobile: '13230000001',
     password: 'abc12345',
+    code: ''
 })
-const check = ref<boolean>(false)
+const check = ref<boolean>(false) // 是否勾选用户协议
+const isPass = ref<boolean>(true) // 是否是密码登录，true为密码登录；false为验证码登录
+
+const form = ref<FormInstance>() // FormInstance 是组件实例的类型
+
+const codeText = ref<string>('发送验证码');
+const codeTime = ref<number>(0);
+let timer: any = null
+// 点击获取验证码按钮
+const getCodeFn = async () => {
+    if (codeTime.value > 0) return showToast(`等待${codeTime.value}秒后再试`)
+    await form.value?.validate('mobile') // 验证表单，支持传入一个或多个 name 来验证单个或部分表单项，不传入 name 时，会验证所有表单项
+    codeTime.value = 60
+    timer = window.setInterval(() => {
+        console.log(codeTime.value)
+        codeTime.value -= 1
+        codeText.value = `${codeTime.value}秒后重试`
+        if (codeTime.value === 0) {
+            codeText.value = `重新发送验证码`
+            window.clearInterval(timer)
+        }
+    }, 1000);
+    const res = await getCode({
+        mobile: data.value.mobile,
+        type: 'login'
+    })
+    showSuccessToast('发送成功')
+    data.value.code = res.data.code
+}
+
+// 组件卸载，移除定时器
+onUnmounted(() => window.clearInterval(timer))
 
 // 登录操作
 const submitFn = async () => {
@@ -33,25 +65,38 @@ const submitFn = async () => {
             @click-right="$router.push('/register')"></MyNavBar>
         <!-- 头部 -->
         <div class="login-head">
-            <h3>密码登录</h3>
-            <a href="javascript:;">
-                <span>短信验证码登录</span>
+            <h3>{{ isPass ? '密码登录' : '短信验证码登录' }}</h3>
+            <a href="javascript:;"
+                @click="isPass = !isPass">
+                <span>{{ !isPass ? '密码登录' : '短信验证码登录' }}</span>
                 <van-icon name="arrow"></van-icon>
             </a>
         </div>
         <!-- 表单 -->
-        <van-form autocomplete="off"
+        <van-form ref="form" autocomplete="off"
             @submit="submitFn">
             <van-field placeholder="请输入手机号"
                 required
                 v-model="data.mobile"
                 type="tel"
+                name="mobile"
                 :rules="mobileRules" />
             <van-field placeholder="请输入密码"
                 required
+                v-if="isPass"
                 type="password"
+                name="password"
                 v-model="data.password"
                 :rules="passwordRules" />
+            <van-field v-else
+                placeholder="短信验证码"
+                name="code"
+                v-model="data.code"
+                :rules="codeRules">
+                <template #button>
+                    <span class="btn-send" :class="{ active: codeTime > 0 }" @click.stop="getCodeFn">{{ codeText }}</span>
+                </template>
+            </van-field>
             <div class="cp-cell">
                 <van-checkbox v-model="check">
                     <span>我已同意</span>

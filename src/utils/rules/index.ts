@@ -8,5 +8,10 @@ const passwordRules = [
     { required: true, message: '请输入密码' },
     { pattern: /^\w{8,24}$/, message: '密码需8-24个字符' },
 ]
+// 表单验证码校验
+const codeRules = [
+    { required: true, message: '请输入验证码码' },
+    { pattern: /^\w{6}$/, message: '密码需6个字符' },
+]
 
-export { mobileRules, passwordRules }
+export { mobileRules, passwordRules, codeRules }
