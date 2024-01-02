@@ -4,6 +4,7 @@ import pinia from './stores/index'
 import 'vant/lib/index.css'
 import './styles/main.scss'
 
+import 'virtual:svg-icons-register'
 import App from './App.vue'
 import router from './router'
 import useVantComp from './vantCompUse'
