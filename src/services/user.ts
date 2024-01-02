@@ -12,3 +12,6 @@ export const getCode = (payload: {mobile: string, type: CodeType}) => {
 }
 
 // 验证码登录
+export const codeLogin = (payload: {mobile: string, code: string}) => {
+    return request<User>('/login', 'post', payload)
+}

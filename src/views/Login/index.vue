@@ -3,7 +3,7 @@ import MyNavBar from '@/components/MyNavBar.vue';
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
 import { showToast, showSuccessToast, type FormInstance } from 'vant';
 import { ref, onUnmounted } from 'vue';
-import { login, getCode } from '@/services/user'
+import { login, getCode, codeLogin } from '@/services/user'
 import { useUserStore } from '@/stores/index'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -11,11 +11,9 @@ const store = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
-const data = ref<{ mobile: string, password: string, code: string }>({
-    mobile: '13230000001',
-    password: 'abc12345',
-    code: ''
-})
+const mobile = ref<string>('13230000001') // 是否勾选用户协议
+const password = ref<string>('abc12345') // 是否勾选用户协议
+const code = ref<string>('') // 是否勾选用户协议
 const check = ref<boolean>(false) // 是否勾选用户协议
 const isPass = ref<boolean>(true) // 是否是密码登录，true为密码登录；false为验证码登录
 
@@ -30,7 +28,6 @@ const getCodeFn = async () => {
     await form.value?.validate('mobile') // 验证表单，支持传入一个或多个 name 来验证单个或部分表单项，不传入 name 时，会验证所有表单项
     codeTime.value = 60
     timer = window.setInterval(() => {
-        console.log(codeTime.value)
         codeTime.value -= 1
         codeText.value = `${codeTime.value}秒后重试`
         if (codeTime.value === 0) {
@@ -39,11 +36,11 @@ const getCodeFn = async () => {
         }
     }, 1000);
     const res = await getCode({
-        mobile: data.value.mobile,
+        mobile: mobile.value,
         type: 'login'
     })
     showSuccessToast('发送成功')
-    data.value.code = res.data.code
+    code.value = res.data.code
 }
 
 // 组件卸载，移除定时器
@@ -52,7 +49,10 @@ onUnmounted(() => window.clearInterval(timer))
 // 登录操作
 const submitFn = async () => {
     if (!check.value) return showToast('请先勾选用户协议')
-    const res = await login(data.value)
+    let res = null
+    // 状态不同调用不同的方法登录
+    if (isPass.value) res = await login({ mobile: mobile.value, password: password.value })
+    else res = await codeLogin({ mobile: mobile.value, code: code.value })
     store.setUser(res.data) // 保存数据
     router.replace((route.query.returnUrl as string) || '/') // 返回来的路由或直接去往首页
     showSuccessToast('登录成功')
@@ -73,11 +73,12 @@ const submitFn = async () => {
             </a>
         </div>
         <!-- 表单 -->
-        <van-form ref="form" autocomplete="off"
+        <van-form ref="form"
+            autocomplete="off"
             @submit="submitFn">
             <van-field placeholder="请输入手机号"
                 required
-                v-model="data.mobile"
+                v-model="mobile"
                 type="tel"
                 name="mobile"
                 :rules="mobileRules" />
@@ -86,15 +87,17 @@ const submitFn = async () => {
                 v-if="isPass"
                 type="password"
                 name="password"
-                v-model="data.password"
+                v-model="password"
                 :rules="passwordRules" />
             <van-field v-else
                 placeholder="短信验证码"
                 name="code"
-                v-model="data.code"
+                v-model="code"
                 :rules="codeRules">
                 <template #button>
-                    <span class="btn-send" :class="{ active: codeTime > 0 }" @click.stop="getCodeFn">{{ codeText }}</span>
+                    <span class="btn-send"
+                        :class="{ active: codeTime > 0 }"
+                        @click.stop="getCodeFn">{{ codeText }}</span>
                 </template>
             </van-field>
             <div class="cp-cell">
