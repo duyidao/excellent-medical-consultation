@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '../stores'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,8 +65,13 @@ const router = createRouter({
   ]
 })
 
+NProgress.configure({
+  showSpinner: false
+})
+
 // 访问权限控制
 router.beforeEach((to) => {
+  NProgress.start()
   // 用户仓库
   const store = useUserStore()
   // 不需要登录的页面，白名单
@@ -77,6 +84,7 @@ router.beforeEach((to) => {
 // 标题修改
 router.afterEach((to) => {
   document.title = to.meta.title || '刀刀问诊'
+  NProgress.done()
 })
 
 export default router
