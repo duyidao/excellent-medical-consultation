@@ -1,18 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '../stores'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
+      redirect: '/home',
       name: 'layout',
       component: () => import('../views/Layout/index.vue'),
       children: [
-        {
-          redirect: 'home',
-          path: '',
-          name: 'default'
-        },
         { // 首页
           path: 'home',
           name: 'home',
@@ -46,6 +43,17 @@ const router = createRouter({
       component: () => import('../views/Login/index.vue')
     }
   ]
+})
+
+// 访问权限控制
+router.beforeEach((to) => {
+  // 用户仓库
+  const store = useUserStore()
+  // 不需要登录的页面，白名单
+  const whiteList = ['/login', '/404']
+  // 如果没有登录且不在白名单内，去登录
+  if (!whiteList.includes(to.path) && !store.user?.token) return '/login'
+  // 否则不做任何处理
 })
 
 export default router
