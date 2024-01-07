@@ -1,32 +1,43 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import MySvgIcon from "@/components/MySvgIcon.vue";
+import MyNavBar from "@/components/MyNavBar.vue";
+import { getPatientList } from '@/services/user'
+import type { PatientList } from '@/types/user'
+import { onMounted, ref } from 'vue'
+
+// 页面初始化加载数据
+const list = ref<PatientList>([])
+const loadList = async () => {
+    const res = await getPatientList()
+    list.value = res.data
+}
+onMounted(() => {
+    loadList()
+})
 </script>
 
 <template>
     <div class="patient-page">
-        <cp-nav-bar title="家庭档案"></cp-nav-bar>
+        <MyNavBar title="家庭档案"></MyNavBar>
         <div class="patient-list">
-            <div class="patient-item">
+            <div class="patient-item"
+                v-for="item in list"
+                :key="item.id">
                 <div class="info">
-                    <span class="name">李富贵</span>
-                    <span class="id">321111********6164</span>
-                    <span>男</span>
-                    <span>32岁</span>
+                    <span class="name">{{ item.name }}</span>
+                    <span class="id">{{ item.idCard.replace(/^(.{6}).+(.{4})$/, '\$1********\$2') }}</span>
+                    <span>{{ item.genderValue }}</span>
+                    <span>{{ item.age }}岁</span>
                 </div>
-                <div class="icon"><MySvgIcon class="cp-icon" name="user-edit" /></div>
+                <div class="icon">
+                    <MySvgIcon class="cp-icon"
+                        name="user-edit" />
+                </div>
                 <div class="tag">默认</div>
             </div>
-            <div class="patient-item">
-                <div class="info">
-                    <span class="name">李富贵</span>
-                    <span class="id">321333********6164</span>
-                    <span>男</span>
-                    <span>32岁</span>
-                </div>
-                <div class="icon"><MySvgIcon class="cp-icon" name="user-edit" /></div>
-            </div>
             <div class="patient-add">
-                <cp-icon name="user-add" />
+                <MySvgIcon name="user-add" />
                 <p>添加患者</p>
             </div>
             <div class="patient-tip">最多可添加 6 人</div>
