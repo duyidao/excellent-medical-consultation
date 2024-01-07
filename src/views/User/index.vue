@@ -2,8 +2,12 @@
 import MySvgIcon from "@/components/MySvgIcon.vue";
 import { getUserInfo } from '@/services/user'
 import type { UserInfo } from '@/types/user'
+import { useUserStore } from '@/stores/index'
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { showConfirmDialog } from 'vant'
 
+// 获取用户数据
 const user = ref<UserInfo>()
 onMounted(async () => {
     const res = await getUserInfo()
@@ -19,6 +23,18 @@ const tools = [
     { label: '官方客服', path: '/' },
     { label: '设置', path: '/' }
 ]
+
+// 退出登录
+const userStore = useUserStore()
+const router = useRouter()
+const logoutFn = async () => {
+    await showConfirmDialog({
+        title: '温馨提示',
+        message: '您确认要退出优医问诊吗？'
+    })
+    userStore.delUser()
+    router.push('/login')
+}
 </script>
 
 <template>
@@ -84,10 +100,12 @@ const tools = [
                 :to="item.path"
                 is-link
                 :border="false">
-                <template #icon><cp-icon :name="`user-tool-0${i + 1}`" /></template>
+                <template #icon><MySvgIcon :name="`user-tool-0${i + 1}`" /></template>
             </van-cell>
         </div>
-
+        <a class="logout"
+            href="javascript:;"
+            @click="logoutFn">退出登录</a>
     </div>
 </template>
 
