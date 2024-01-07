@@ -1,5 +1,5 @@
 import { request } from './../utils/network/index';
-import type { User, CodeType, Code } from '@/types/user.d.ts';
+import type { User, CodeType, Code, UserInfo } from '@/types/user.d.ts';
 
 // 账号密码登录
 export const login = (payload: {mobile: string, password: string}) => {
@@ -15,3 +15,6 @@ export const getCode = (payload: {mobile: string, type: CodeType}) => {
 export const codeLogin = (payload: {mobile: string, code: string}) => {
     return request<User>('/login', 'post', payload)
 }
+
+// 获取个人信息
+export const getUserInfo = () => request<UserInfo>('/patient/myUser')

@@ -55,6 +55,14 @@ const router = createRouter({
       ]
     },
     {
+      path: '/order',
+      name: 'order',
+      meta: {
+        title: '登录'
+      },
+      component: () => import('../views/Order/index.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       meta: {
