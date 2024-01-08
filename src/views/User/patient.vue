@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import MySvgIcon from "@/components/MySvgIcon.vue";
 import MyNavBar from "@/components/MyNavBar.vue";
+import MyRadioBtn from "@/components/MyRadioBtn.vue";
 import { getPatientList } from '@/services/user'
 import type { PatientList } from '@/types/user'
 import { onMounted, ref } from 'vue'
@@ -15,6 +16,18 @@ const loadList = async () => {
 onMounted(() => {
     loadList()
 })
+
+const options = ref([
+    {
+        label: '男',
+        value: '1'
+    },
+    {
+        label: '女',
+        value: '2'
+    },
+])
+const gender = ref('1')
 </script>
 
 <template>
@@ -42,6 +55,7 @@ onMounted(() => {
             </div>
             <div class="patient-tip">最多可添加 6 人</div>
         </div>
+        <MyRadioBtn :options="options" v-model="gender"/>
     </div>
 </template>
 
