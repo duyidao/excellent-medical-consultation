@@ -1,4 +1,4 @@
-import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider, Toast, Tabbar, TabbarItem, Image, Col, Row, Cell } from 'vant';
+import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider, Toast, Tabbar, TabbarItem, Image, Col, Row, Cell, Popup } from 'vant';
 
 export default (app: any) => {
     app.use(NavBar);
@@ -16,4 +16,5 @@ export default (app: any) => {
     app.use(Col);
     app.use(Row);
     app.use(Cell);
+    app.use(Popup);
 }

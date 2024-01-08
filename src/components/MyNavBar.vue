@@ -8,6 +8,7 @@ const props = defineProps<{
     title?: string
     leftText?: string
     rightText?: string
+    back?: () => void
 }>()
 const emit = defineEmits<{
     (e: 'click-left' | 'click-right'): void
@@ -15,6 +16,8 @@ const emit = defineEmits<{
 
 // 点击左侧按钮
 const onClickLeft = () => {
+    // 如果传了back回调，则调用back回调
+    if (props.back) return props.back()
     // 判断历史记录中是否有回退
     if (history.state?.back) {
         router.back()
