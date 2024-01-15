@@ -3,12 +3,12 @@
 import MySvgIcon from "@/components/MySvgIcon.vue";
 import MyNavBar from "@/components/MyNavBar.vue";
 import MyRadioBtn from "@/components/MyRadioBtn.vue";
-import { getPatientList } from '@/services/user'
+import { getPatientList, addPatient, editPatient } from '@/services/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules/index'
 import type { FormInstance } from 'vant';
-import { showConfirmDialog } from 'vant';
+import { showConfirmDialog, showSuccessToast } from 'vant';
 
 // 页面初始化加载数据
 const list = ref<PatientList>([])
@@ -31,12 +31,6 @@ const options = ref([
     },
 ])
 
-// 打开侧滑栏
-const show = ref(false)
-const showPopup = () => {
-    show.value = true
-}
-
 // 表单数据（单独拎出来，后续可以重置使用）
 const insetForm: Patient = {
     name: '',
@@ -44,6 +38,21 @@ const insetForm: Patient = {
     gender: 1,
     defaultFlag: 0
 }
+
+// 打开侧滑栏
+const show = ref(false)
+const showPopup = (item: Patient) => {
+    show.value = true
+    if (item) {
+        // 如果点的是编辑，解构出后台需要的数据
+        const { id, gender, name, idCard, defaultFlag } = item
+        formData.value = { id, gender, name, idCard, defaultFlag }
+    } else {
+        // 如果点的是新增，则清空之前的值
+        formData.value = { ...insetForm }
+    }
+}
+
 // 表单
 const formData = ref<Patient>({
     ...insetForm
@@ -61,7 +70,6 @@ const defaultFlag = computed({
 // 点击表单返回按钮
 const backFn = () => {
     show.value = false
-    formData.value = { ...insetForm }
 }
 
 const form = ref<FormInstance>()
@@ -76,7 +84,18 @@ const onSubmit = async () => {
             message: '填写的性别和身份证号中的不一致\n您确认提交吗？'
         })
     }
-    console.log('通过校验')
+
+    if (formData.value.id) {
+        // 编辑患者
+        await editPatient(formData.value)
+        showSuccessToast('编辑成功')
+    } else {
+        // 添加患者
+        await addPatient(formData.value)
+        showSuccessToast('添加成功')
+    }
+    loadList()
+    backFn()
 }
 </script>
 
@@ -93,11 +112,13 @@ const onSubmit = async () => {
                     <span>{{ item.genderValue }}</span>
                     <span>{{ item.age }}岁</span>
                 </div>
-                <div class="icon">
+                <div class="icon"
+                    @click="showPopup(item)">
                     <MySvgIcon class="cp-icon"
                         name="user-edit" />
                 </div>
-                <div class="tag">默认</div>
+                <div class="tag"
+                    v-if="item.defaultFlag === 1">默认</div>
             </div>
             <div class="patient-add"
                 v-if="list.length < 7"
@@ -111,7 +132,8 @@ const onSubmit = async () => {
         <!-- 侧边栏 -->
         <van-popup v-model:show="show"
             position="right">
-            <MyNavBar title="添加患者"
+            <MyNavBar
+                :title="formData.id ? '编辑患者' : '添加患者'"
                 :back="backFn"
                 right-text="保存"
                 @clickRight="onSubmit"></MyNavBar>
