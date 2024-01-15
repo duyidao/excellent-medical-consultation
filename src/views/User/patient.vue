@@ -6,6 +6,9 @@ import MyRadioBtn from "@/components/MyRadioBtn.vue";
 import { getPatientList } from '@/services/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
+import { nameRules, idCardRules } from '@/utils/rules/index'
+import type { FormInstance } from 'vant';
+import { showConfirmDialog } from 'vant';
 
 // 页面初始化加载数据
 const list = ref<PatientList>([])
@@ -60,6 +63,21 @@ const backFn = () => {
     show.value = false
     formData.value = { ...insetForm }
 }
+
+const form = ref<FormInstance>()
+// 点击提交按钮
+const onSubmit = async () => {
+    await form.value?.validate()
+    // 身份证倒数第二位，单数是男，双数是女
+    const gender = +formData.value.idCard.slice(-2, -1) % 2
+    if (gender !== formData.value.gender) {
+        await showConfirmDialog({
+            title: '温馨提示',
+            message: '填写的性别和身份证号中的不一致\n您确认提交吗？'
+        })
+    }
+    console.log('通过校验')
+}
 </script>
 
 <template>
@@ -95,15 +113,18 @@ const backFn = () => {
             position="right">
             <MyNavBar title="添加患者"
                 :back="backFn"
-                right-text="保存"></MyNavBar>
+                right-text="保存"
+                @clickRight="onSubmit"></MyNavBar>
 
             <van-form autocomplete="off"
                 ref="form">
                 <van-field v-model="formData.name"
                     label="真实姓名"
+                    :rules="nameRules"
                     placeholder="请输入真实姓名" />
                 <van-field v-model="formData.idCard"
                     label="身份证号"
+                    :rules="idCardRules"
                     placeholder="请输入身份证号" />
                 <van-field label="性别"
                     class="pb4">

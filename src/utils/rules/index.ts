@@ -1,3 +1,6 @@
+/**
+ * 登录表单校验
+*/
 // 表单手机校验
 const mobileRules = [
     { required: true, message: '请输入手机号' },
@@ -14,4 +17,16 @@ const codeRules = [
     { pattern: /^\w{6}$/, message: '密码需6个字符' },
 ]
 
-export { mobileRules, passwordRules, codeRules }
+/**
+ * 添加患者表单校验
+*/
+const nameRules = [
+    { required: true, mmessage: '请输入患者姓名' },
+    { pattern: /^(?:[\u4e00-\u9fa5·]{2,16})$/, message: '中文2-16个字符' },
+]
+
+const idCardRules = [
+    { required: true, mmessage: '请输入患者身份证' },
+    { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '身份证格式不对' },
+]
+export { mobileRules, passwordRules, codeRules, nameRules, idCardRules }
