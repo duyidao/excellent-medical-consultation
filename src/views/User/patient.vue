@@ -41,7 +41,7 @@ const insetForm: Patient = {
 
 // 打开侧滑栏
 const show = ref(false)
-const showPopup = (item: Patient) => {
+const showPopup = (item?: Patient) => {
     show.value = true
     if (item) {
         // 如果点的是编辑，解构出后台需要的数据
@@ -136,7 +136,7 @@ const onRemove = async () => {
             </div>
             <div class="patient-add"
                 v-if="list.length < 7"
-                @click="showPopup">
+                @click="showPopup()">
                 <MySvgIcon name="user-add" />
                 <p>添加患者</p>
             </div>
