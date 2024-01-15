@@ -3,7 +3,7 @@
 import MySvgIcon from "@/components/MySvgIcon.vue";
 import MyNavBar from "@/components/MyNavBar.vue";
 import MyRadioBtn from "@/components/MyRadioBtn.vue";
-import { getPatientList, addPatient, editPatient } from '@/services/user'
+import { getPatientList, addPatient, editPatient, delPatient } from '@/services/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules/index'
@@ -97,6 +97,20 @@ const onSubmit = async () => {
     loadList()
     backFn()
 }
+
+// 点击删除按钮
+const onRemove = async () => {
+    if (formData.value.id) {
+    await showConfirmDialog({
+      title: '温馨提示',
+      message: `您确认要删除 ${formData.value.name} 患者信息吗 ？`
+    })
+    await delPatient(formData.value.id)
+    show.value = false
+    loadList()
+    showSuccessToast('删除成功')
+  }
+}
 </script>
 
 <template>
@@ -132,8 +146,7 @@ const onSubmit = async () => {
         <!-- 侧边栏 -->
         <van-popup v-model:show="show"
             position="right">
-            <MyNavBar
-                :title="formData.id ? '编辑患者' : '添加患者'"
+            <MyNavBar :title="formData.id ? '编辑患者' : '添加患者'"
                 :back="backFn"
                 right-text="保存"
                 @clickRight="onSubmit"></MyNavBar>
@@ -164,7 +177,9 @@ const onSubmit = async () => {
                     </template>
                 </van-field>
             </van-form>
-
+            <van-action-bar v-if="formData.id">
+                <van-action-bar-button @click="onRemove">删除</van-action-bar-button>
+            </van-action-bar>
         </van-popup>
     </div>
 </template>
@@ -272,5 +287,16 @@ const onSubmit = async () => {
 
 .pb4 {
     padding-bottom: 4px;
+}
+
+// 底部操作栏
+.van-action-bar {
+    padding: 0 10px;
+    margin-bottom: 10px;
+
+    .van-button {
+        color: var(--cp-price);
+        background-color: var(--cp-bg);
+    }
 }
 </style>
