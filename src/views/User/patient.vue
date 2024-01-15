@@ -4,8 +4,8 @@ import MySvgIcon from "@/components/MySvgIcon.vue";
 import MyNavBar from "@/components/MyNavBar.vue";
 import MyRadioBtn from "@/components/MyRadioBtn.vue";
 import { getPatientList } from '@/services/user'
-import type { PatientList } from '@/types/user'
-import { onMounted, ref } from 'vue'
+import type { PatientList, Patient } from '@/types/user'
+import { onMounted, ref, computed } from 'vue'
 
 // 页面初始化加载数据
 const list = ref<PatientList>([])
@@ -20,19 +20,45 @@ onMounted(() => {
 const options = ref([
     {
         label: '男',
-        value: '1'
+        value: 1
     },
     {
         label: '女',
-        value: '2'
+        value: 2
     },
 ])
-const gender = ref('1')
 
 // 打开侧滑栏
 const show = ref(false)
 const showPopup = () => {
     show.value = true
+}
+
+// 表单数据（单独拎出来，后续可以重置使用）
+const insetForm: Patient = {
+    name: '',
+    idCard: '',
+    gender: 1,
+    defaultFlag: 0
+}
+// 表单
+const formData = ref<Patient>({
+    ...insetForm
+})
+// 默认选框数据计算
+const defaultFlag = computed({
+    get() {
+        return formData.value.defaultFlag === 0 ? false : true
+    },
+    set(val) {
+        formData.value.defaultFlag = val ? 1 : 0
+    }
+})
+
+// 点击表单返回按钮
+const backFn = () => {
+    show.value = false
+    formData.value = { ...insetForm }
 }
 </script>
 
@@ -65,30 +91,32 @@ const showPopup = () => {
         </div>
 
         <!-- 侧边栏 -->
-        <van-popup :show="show"
-            @update:show="show = $event"
+        <van-popup v-model:show="show"
             position="right">
             <MyNavBar title="添加患者"
-                :back="() => (show = false)"
+                :back="backFn"
                 right-text="保存"></MyNavBar>
 
             <van-form autocomplete="off"
                 ref="form">
-                <van-field label="真实姓名"
+                <van-field v-model="formData.name"
+                    label="真实姓名"
                     placeholder="请输入真实姓名" />
-                <van-field label="身份证号"
+                <van-field v-model="formData.idCard"
+                    label="身份证号"
                     placeholder="请输入身份证号" />
                 <van-field label="性别"
                     class="pb4">
                     <!-- 单选按钮组件 -->
                     <template #input>
                         <MyRadioBtn :options="options"
-                            v-model="gender" />
+                            v-model="formData.gender" />
                     </template>
                 </van-field>
                 <van-field label="默认就诊人">
                     <template #input>
-                        <van-checkbox :icon-size="18"
+                        <van-checkbox v-model="defaultFlag"
+                            :icon-size="18"
                             round />
                     </template>
                 </van-field>
@@ -106,6 +134,7 @@ const showPopup = () => {
         .van-popup {
             width: 80%;
             height: 100%;
+            padding-top: 50px;
         }
     }
 }
