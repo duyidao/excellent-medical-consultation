@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import type { Doctor } from '@/types/consult'
+import { useFollow } from '@/composable/index'
 
 defineProps<{
     item: Doctor
 }>()
+
+const { loading, follow } = useFollow()
 </script>
 
 <template>
@@ -14,6 +17,8 @@ defineProps<{
         <p class="van-ellipsis">{{ item.hospitalName }} {{ item.depName }}</p>
         <p>{{ item.positionalTitles }}</p>
         <van-button round
+            :loading="loading"
+            @click="follow(item)"
             size="small"
             type="primary">{{ item.likeFlag === 1 ? '已关注' : '+ 关注' }}</van-button>
     </div>

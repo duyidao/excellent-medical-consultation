@@ -6,7 +6,7 @@ export type Knowledge = {
     /** 封面[] */
     coverUrl: string[]
     /** 标签[] */
-    topics: string[]
+    topic: string
     /** 收藏数 */
     collectionNumber: number
     /** 评论数 */
@@ -55,16 +55,16 @@ export type PageParams = {
     current: number
     /** 每页条数 */
     pageSize: number
-  }
-  
-  // 文章列表查询参数
-  export type KnowledgeParams = PageParams & {
+}
+
+// 文章列表查询参数
+export type KnowledgeParams = PageParams & {
     /** 文章类型 */
     type: KnowledgeType
-  }
-  
-  // 医生卡片对象
-  export type Doctor = {
+}
+
+// 医生卡片对象
+export type Doctor = {
     /** 医生ID */
     id: string
     /** 医生名称 */
@@ -89,15 +89,17 @@ export type PageParams = {
     score: number
     /** 主攻方向 */
     major: string
-  }
-  
-  // 医生列表
-  export type DoctorList = Doctor[]
-  
-  // 医生分页
-  export type DoctorPage = {
+}
+
+// 医生列表
+export type DoctorList = Doctor[]
+
+// 医生分页
+export type DoctorPage = {
     pageTotal: number
     total: number
     rows: DoctorList
-  }  
+}
 
+// 关注的类型，医生|文章|百科话题|疾病
+export type FollowType = 'doc' | 'knowledge' | 'topic' | 'disease'
