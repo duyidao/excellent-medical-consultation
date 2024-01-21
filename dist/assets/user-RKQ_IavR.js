@@ -1,0 +1,1 @@
+import{r as e}from"./index-2TmI54FF.js";const n=t=>e("/login/password","post",t),a=t=>e("/code","get",t),o=t=>e("/login","post",t),i=()=>e("/patient/myUser"),r=()=>e("/patient/mylist"),d=t=>e("/patient/add","POST",t),c=t=>e("/patient/update","PUT",t),p=t=>e(`/patient/del/${t}`,"DELETE");export{r as a,d as b,o as c,p as d,c as e,a as f,i as g,n as l};

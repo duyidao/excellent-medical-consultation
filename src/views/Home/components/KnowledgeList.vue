@@ -15,7 +15,7 @@ const params = ref<KnowledgeParams>({
   pageSize: 10
 })
 
-const list = ref<KnowledgeList[]>([])
+const list = ref<KnowledgeList>([])
 const loading = ref(false)
 const finished = ref(false)
 const onLoad = async () => {

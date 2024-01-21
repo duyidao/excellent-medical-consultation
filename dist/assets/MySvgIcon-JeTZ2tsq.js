@@ -1,0 +1,1 @@
+import{d as o,o as s,c as n,e as a,_ as c}from"./index-Imn3sEkB.js";const t={"aria-hidden":"true",class:"svg-icon"},r=["href"],_=o({__name:"MySvgIcon",props:{name:{}},setup(p){return(e,d)=>(s(),n("svg",t,[a("use",{href:`#icon-${e.name}`},null,8,r)]))}}),m=c(_,[["__scopeId","data-v-2b93b272"]]);export{m as M};

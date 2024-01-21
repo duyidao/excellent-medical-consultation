@@ -103,7 +103,7 @@ router.beforeEach((to) => {
 
 // 标题修改
 router.afterEach((to) => {
-  document.title = to.meta.title || '刀刀问诊'
+  document.title = to.meta.title as string || '刀刀问诊'
   NProgress.done()
 })
 
