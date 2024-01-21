@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import DoctorCard from './DoctorCard.vue'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import type { DoctorList } from '@/types/consult'
 import { useWindowSize } from '@vueuse/core'
+import {getDoctorPage} from '@/services/consult'
 
 const { width } = useWindowSize()
+
+const list = ref<DoctorList>()
+onMounted(async () => {
+    const res = await getDoctorPage({
+        current: 1,
+        pageSize: 5
+    })
+    console.log(res)
+    list.value = res.data.rows
+})
 
 // const width = ref(0)
 // const setWidth = () => width.value = window.innerWidth // 获取屏幕宽度
@@ -28,14 +40,15 @@ const { width } = useWindowSize()
         </div>
         <div class="body">
             <!-- swipe 组件 -->
-            <van-swipe :width="(150 / 375) * width"
+            <van-swipe v-if="list?.length" :width="(150 / 375) * width"
                 :show-indicators="false"
                 :loop="false">
-                <van-swipe-item v-for="item in 5"
-                    :key="item">
-                    <doctor-card />
+                <van-swipe-item v-for="item in list"
+                    :key="item.id">
+                    <doctor-card :item="item" />
                 </van-swipe-item>
             </van-swipe>
+            <van-empty v-else image="error" description="暂无数据" />
         </div>
     </div>
 </template>
@@ -44,6 +57,10 @@ const { width } = useWindowSize()
 .follow-doctor {
     background-color: var(--cp-bg);
     height: 250px;
+
+    ::v-deep .van-empty {
+        padding: 0;
+    }
 
     .head {
         display: flex;
