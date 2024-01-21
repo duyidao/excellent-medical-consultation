@@ -71,7 +71,7 @@ const router = createRouter({
     {
       path: '/consult/fast',
       name: 'fast',
-      component: () => import('../views/Consult/fast.vue'),
+      component: () => import('../views/Consult/ConsultFast.vue'),
       meta: { title: '极速问诊' }
     },
     {
