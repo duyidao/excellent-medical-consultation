@@ -3,6 +3,10 @@ import { ref } from 'vue';
 import MySvgIcon from "@/components/MySvgIcon.vue";
 import KnowledgeList from './components/KnowledgeList.vue'
 import FollowDoctor from './components/FollowDoctor.vue'
+import { useConsultStore } from '@/stores'
+import { ConsultType } from '@/enums'
+
+const store = useConsultStore()
 
 const active = ref(0)
 </script>
@@ -43,6 +47,7 @@ const active = ref(0)
                 </van-col>
                 <van-col span="8">
                     <router-link to="/consult/fast"
+                        @click="store.setType(ConsultType.Fast)"
                         class="nav">
                         <MySvgIcon name="home-graphic"></MySvgIcon>
                         <p class="title">极速问诊</p>

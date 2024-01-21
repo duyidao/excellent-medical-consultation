@@ -6,6 +6,7 @@ const pinia = createPinia().use(persist)
 
 // 按需统一导出所有状态仓库
 export * from './modules/user'
+export * from './modules/consult'
 
 // 导出pinia
 export default pinia
