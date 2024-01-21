@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import MySvgIcon from '@/components/MySvgIcon.vue';
+import MyNavBar from '@/components/MyNavBar.vue';
 import { useConsultStore } from '@/stores'
 
 const store = useConsultStore()
@@ -6,8 +8,8 @@ const store = useConsultStore()
 
 <template>
     <div class="consult-fast-page">
-        <cp-nav-bar title="极速问诊"
-            right-text="问诊记录"></cp-nav-bar>
+        <MyNavBar title="极速问诊"
+            right-text="问诊记录"></MyNavBar>
         <div class="fast-logo">
             <img class="img"
                 src="@/assets/consult-fast.png"
@@ -18,8 +20,8 @@ const store = useConsultStore()
             <router-link to="/consult/dep"
                 class="item"
                 @click="store.setIllnessType(1)">
-                <cp-icon class="pic"
-                    name="consult-doctor"></cp-icon>
+                <MySvgIcon class="pic"
+                    name="consult-doctor"></MySvgIcon>
                 <div class="info">
                     <p>三甲图文问诊</p>
                     <p>三甲主治及以上级别医生</p>
@@ -29,8 +31,8 @@ const store = useConsultStore()
             <router-link to="/consult/dep"
                 class="item"
                 @click="store.setIllnessType(0)">
-                <cp-icon class="pic"
-                    name="consult-message"></cp-icon>
+                <MySvgIcon class="pic"
+                    name="consult-message"></MySvgIcon>
                 <div class="info">
                     <p>普通图文问诊</p>
                     <p>二甲主治及以上级别医生</p>

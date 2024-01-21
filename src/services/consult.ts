@@ -1,5 +1,5 @@
 import { request } from './../utils/network/index';
-import type { KnowledgePage, DoctorPage, KnowledgeParams, PageParams, FollowType } from '../types/consult.d.ts';
+import type { KnowledgePage, DoctorPage, KnowledgeParams, PageParams, FollowType, TopDep } from '../types/consult.d.ts';
 
 export const getKnowledgePage = (params: KnowledgeParams) =>
   request<KnowledgePage>('/patient/home/knowledge', 'GET', params)
@@ -10,3 +10,6 @@ export const getDoctorPage = (params: PageParams) =>
 
 // 关注与取消关注
 export const followOrUnfollow = (id: string, type: FollowType = 'doc') => request('/like', 'POST', { id, type })
+
+// 科室列表
+export const getAllDep = () => request<TopDep[]>('/dep/all')
