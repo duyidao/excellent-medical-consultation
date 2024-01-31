@@ -1,6 +1,7 @@
-import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider, Toast, Tabbar, TabbarItem, Image, Col, Row, Cell, Popup, ActionBar, ActionBarButton, Swipe, Tabs, SwipeItem, Tab, List, Empty, SidebarItem, Sidebar } from 'vant';
+import { NavBar, Checkbox, CheckboxGroup, Icon, Field, Button, Form, Divider, Toast, Tabbar, TabbarItem, Image, Col, Row, Cell, Popup, ActionBar, ActionBarButton, Swipe, Tabs, SwipeItem, Tab, List, Empty, SidebarItem, Sidebar, Uploader } from 'vant';
 
 export default (app: any) => {
+    app.use(Uploader);
     app.use(SidebarItem);
     app.use(Sidebar);
     app.use(Empty);
