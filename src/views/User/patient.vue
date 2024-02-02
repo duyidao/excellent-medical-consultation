@@ -8,13 +8,35 @@ import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules/index'
 import type { FormInstance } from 'vant';
-import { showConfirmDialog, showSuccessToast } from 'vant';
+import { showConfirmDialog, showSuccessToast, showToast } from 'vant';
+import { useRoute, useRouter } from 'vue-router'
+import { useConsultStore } from '@/stores'
+
+// 标题动态
+const route = useRoute()
+const router = useRouter()
+const isChange = computed(() => route.query.isChange === '1')
+const title = ref(isChange.value ? '选择患者' : '家庭档案')
+
+// 是否选择当前就诊人
+const patientId = ref<string>()
+const selectedPatient = (item: Patient) => {
+    if (isChange.value) {
+        patientId.value = item.id
+    }
+}
 
 // 页面初始化加载数据
 const list = ref<PatientList>([])
 const loadList = async () => {
     const res = await getPatientList()
     list.value = res.data
+    // 设置默认选中的ID，当你是选择患者的时候，且有患者信息的时候
+    if (isChange.value && list.value.length) {
+        const defPatient = list.value.find((item) => item.defaultFlag === 1)
+        if (defPatient) patientId.value = defPatient.id
+        else patientId.value = list.value[0].id
+    }
 }
 onMounted(() => {
     loadList()
@@ -101,25 +123,43 @@ const onSubmit = async () => {
 // 点击删除按钮
 const onRemove = async () => {
     if (formData.value.id) {
-    await showConfirmDialog({
-      title: '温馨提示',
-      message: `您确认要删除 ${formData.value.name} 患者信息吗 ？`
-    })
-    await delPatient(formData.value.id)
-    show.value = false
-    loadList()
-    showSuccessToast('删除成功')
-  }
+        await showConfirmDialog({
+            title: '温馨提示',
+            message: `您确认要删除 ${formData.value.name} 患者信息吗 ？`
+        })
+        await delPatient(formData.value.id)
+        show.value = false
+        loadList()
+        showSuccessToast('删除成功')
+    }
+}
+
+// 点击下一步按钮
+const store = useConsultStore()
+const next = () => {
+    if (!patientId.value) return showToast('请选就诊择患者')
+    store.setPatient(patientId.value)
+    router.push('/consult/pay')
 }
 </script>
 
 <template>
     <div class="patient-page">
-        <MyNavBar title="家庭档案"></MyNavBar>
+        <MyNavBar :title="title"></MyNavBar>
+
+        <!-- 头部提示 -->
+        <div class="patient-change"
+            v-if="isChange">
+            <h3>请选择患者信息</h3>
+            <p>以便医生给出更准确的治疗，信息仅医生可见</p>
+        </div>
+
         <div class="patient-list">
             <div class="patient-item"
                 v-for="item in list"
-                :key="item.id">
+                :key="item.id"
+                @click="selectedPatient(item)"
+                :class="{ selected: patientId === item.id }">
                 <div class="info">
                     <span class="name">{{ item.name }}</span>
                     <span class="id">{{ item.idCard.replace(/^(.{6}).+(.{4})$/, '\$1********\$2') }}</span>
@@ -181,6 +221,15 @@ const onRemove = async () => {
                 <van-action-bar-button @click="onRemove">删除</van-action-bar-button>
             </van-action-bar>
         </van-popup>
+
+        <!-- 底部按钮 -->
+        <div class="patient-next"
+            v-if="isChange">
+            <van-button type="primary"
+                round
+                block
+                @click="next">下一步</van-button>
+        </div>
     </div>
 </template>
 
@@ -194,6 +243,30 @@ const onRemove = async () => {
             height: 100%;
             padding-top: 50px;
         }
+    }
+
+    .patient-change {
+        padding: 15px;
+
+        >h3 {
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+
+        >p {
+            color: var(--cp-text3);
+        }
+    }
+
+    .patient-next {
+        padding: 15px;
+        background-color: #fff;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 80px;
+        box-sizing: border-box;
     }
 }
 
