@@ -2,14 +2,13 @@
 import MySvgIcon from '@/components/MySvgIcon.vue';
 import MyNavBar from '@/components/MyNavBar.vue';
 import type { ConsultIllness } from '@/types/consult'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { IllnessTime } from '@/enums'
 import MyRadioBtn from '@/components/MyRadioBtn.vue';
 import MyUploadImg from '@/components/MyUploadImg.vue';
 import { useRouter } from 'vue-router'
-import { showToast } from 'vant'
+import { showToast, showConfirmDialog } from 'vant'
 import { useConsultStore } from '@/stores'
-
 // 数据枚举
 const timeOptions = [
     { label: '一周内', value: IllnessTime.Week },
@@ -26,6 +25,29 @@ const form = ref<ConsultIllness>({
     illnessTime: undefined,
     consultFlag: undefined,
     pictures: []
+})
+
+// 如果有数据，提示用户是否需要回显
+onMounted(() => {
+    if (store.consult.illnessDesc) {
+        showConfirmDialog({
+            title: '提示',
+            message:
+                '有未填写的表单，是否需要回显？',
+        })
+            .then(() => {
+                // on confirm
+                form.value = {
+                    illnessDesc: store.consult.illnessDesc,
+                    illnessTime: store.consult.illnessTime,
+                    consultFlag: store.consult.consultFlag,
+                    pictures: store.consult.pictures || []
+                }
+            })
+            .catch(() => {
+                // on cancel
+            });
+    }
 })
 
 // 是否下一步按钮可用
@@ -170,4 +192,5 @@ const next = () => {
         color: #d9dbde;
         border: #fafafa;
     }
-}</style>
+}
+</style>

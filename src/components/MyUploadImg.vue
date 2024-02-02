@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UploaderAfterRead, UploaderFileListItem } from 'vant/lib/uploader/types'
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { uploadImage } from '@/services/consult'
 import type { Image } from '../types/consult.d.ts';
 
@@ -11,7 +11,10 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: Image[]): void
 }>()
 
-const fileList = ref([])
+const fileList = computed(() => {
+    return props.modelValue
+})
+
 const onAfterRead: UploaderAfterRead = (item) => {
     if (Array.isArray(item)) return
     if (!item.file) return

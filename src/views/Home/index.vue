@@ -113,6 +113,11 @@ const active = ref(0)
 <style lang="scss" scoped>
 .home-page {
     padding-bottom: 50px;
+
+    ::v-deep .van-tab__panel {
+        height: calc(100vh - 450px);
+        overflow-y: auto;
+    }
 }
 
 .home-header {
