@@ -1,11 +1,49 @@
 <script setup lang="ts">
+import type { UploaderAfterRead, UploaderFileListItem } from 'vant/lib/uploader/types'
+import { ref } from 'vue'
+import { uploadImage } from '@/services/consult'
+import type { Image } from '../types/consult.d.ts';
 
+const props = defineProps<{
+    modelValue?: Image[]
+}>()
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: Image[]): void
+}>()
+
+const fileList = ref([])
+const onAfterRead: UploaderAfterRead = (item) => {
+    if (Array.isArray(item)) return
+    if (!item.file) return
+    // 开始上传
+    item.status = 'uploading'
+    item.message = '上传中...'
+    uploadImage(item.file)
+        .then((res) => {
+            item.status = 'done'
+            item.message = undefined
+            item.url = res.data.url
+            emit('update:modelValue', [res.data, ...props.modelValue as Image[]])
+        })
+        .catch(() => {
+            item.status = 'failed'
+            item.message = '上传失败'
+        })
+}
+
+const onDeleteImg = (item: UploaderFileListItem) => {
+    // 删除图片
+    emit('update:modelValue', props.modelValue!.filter((pic) => pic.url !== item.url))
+}
 </script>
 
 <template>
     <div class="illness-img">
         <!-- 配置文字和图标，配置最多数量和最大体积 -->
-        <van-uploader max-count="9"
+        <van-uploader :after-read="onAfterRead"
+            @delete="onDeleteImg"
+            v-model="fileList"
+            max-count="9"
             :max-size="5 * 1024 * 1024"
             upload-icon="photo-o"
             upload-text="上传图片"></van-uploader>

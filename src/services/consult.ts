@@ -1,5 +1,5 @@
 import { request } from './../utils/network/index';
-import type { KnowledgePage, DoctorPage, KnowledgeParams, PageParams, FollowType, TopDep } from '../types/consult.d.ts';
+import type { KnowledgePage, DoctorPage, KnowledgeParams, PageParams, FollowType, TopDep, Image } from '../types/consult.d.ts';
 
 export const getKnowledgePage = (params: KnowledgeParams) =>
   request<KnowledgePage>('/patient/home/knowledge', 'GET', params)
@@ -13,3 +13,9 @@ export const followOrUnfollow = (id: string, type: FollowType = 'doc') => reques
 
 // 科室列表
 export const getAllDep = () => request<TopDep[]>('/dep/all')
+
+export const uploadImage = (file: File) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  return request<Image>('/upload', 'POST', fd)
+}

@@ -2,27 +2,51 @@
 import MySvgIcon from '@/components/MySvgIcon.vue';
 import MyNavBar from '@/components/MyNavBar.vue';
 import type { ConsultIllness } from '@/types/consult'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { IllnessTime } from '@/enums'
 import MyRadioBtn from '@/components/MyRadioBtn.vue';
+import MyUploadImg from '@/components/MyUploadImg.vue';
+import { useRouter } from 'vue-router'
+import { showToast } from 'vant'
+import { useConsultStore } from '@/stores'
 
+// 数据枚举
 const timeOptions = [
-  { label: '一周内', value: IllnessTime.Week },
-  { label: '一月内', value: IllnessTime.Month },
-  { label: '半年内', value: IllnessTime.HalfYear },
-  { label: '大于半年', value: IllnessTime.More }
+    { label: '一周内', value: IllnessTime.Week },
+    { label: '一月内', value: IllnessTime.Month },
+    { label: '半年内', value: IllnessTime.HalfYear },
+    { label: '大于半年', value: IllnessTime.More }
 ]
 const flagOptions = [
-  { label: '就诊过', value: 1 },
-  { label: '没就诊过', value: 0 }
+    { label: '就诊过', value: 1 },
+    { label: '没就诊过', value: 0 }
 ]
 const form = ref<ConsultIllness>({
-  illnessDesc: '',
-  illnessTime: undefined,
-  consultFlag: undefined,
-  pictures: []
+    illnessDesc: '',
+    illnessTime: undefined,
+    consultFlag: undefined,
+    pictures: []
 })
 
+// 是否下一步按钮可用
+const disabled = computed(
+    () =>
+        !form.value.illnessDesc ||
+        form.value.illnessTime === undefined ||
+        form.value.consultFlag === undefined
+)
+
+// 点击下一步按钮
+const store = useConsultStore()
+const router = useRouter()
+const next = () => {
+    if (!form.value.illnessDesc) return showToast('请输入病情描述')
+    if (form.value.illnessTime === undefined) return showToast('请选择症状持续时间')
+    if (form.value.consultFlag === undefined) return showToast('请选择是否已经就诊')
+    store.setIllness(form.value)
+    // 跳转档案管理，需要根据 isChange 实现选择功能
+    router.push('/user/patient?isChange=1')
+}
 </script>
 
 <template>
@@ -50,13 +74,22 @@ const form = ref<ConsultIllness>({
                 v-model="form.illnessDesc"></van-field>
             <div class="item">
                 <p>本次患病多久了？</p>
-                <MyRadioBtn :options="timeOptions" v-model="form.illnessTime" />
+                <MyRadioBtn :options="timeOptions"
+                    v-model="form.illnessTime" />
             </div>
             <div class="item">
                 <p>此次病情是否去医院就诊过？</p>
-                <MyRadioBtn :options="flagOptions" v-model="form.consultFlag" />
+                <MyRadioBtn :options="flagOptions"
+                    v-model="form.consultFlag" />
             </div>
+            <!-- 图片 -->
+            <MyUploadImg v-model="form.pictures" />
         </div>
+        <van-button :class="{ disabled }"
+            @click="next"
+            type="primary"
+            block
+            round>下一步</van-button>
     </div>
 </template>
 
@@ -126,4 +159,15 @@ const form = ref<ConsultIllness>({
         }
     }
 }
-</style>
+
+.van-button {
+    font-size: 16px;
+    margin-bottom: 30px;
+
+    &.disabled {
+        opacity: 1;
+        background: #fafafa;
+        color: #d9dbde;
+        border: #fafafa;
+    }
+}</style>
