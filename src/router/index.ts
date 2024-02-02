@@ -69,6 +69,12 @@ const router = createRouter({
       meta: { title: '家庭档案' }
     },
     {
+      path: '/user/result',
+      name: 'result',
+      component: () => import('../views/User/result.vue'),
+      meta: { title: '家庭档案' }
+    },
+    {
       path: '/consult/fast',
       name: 'fast',
       component: () => import('../views/Consult/ConsultFast.vue'),
