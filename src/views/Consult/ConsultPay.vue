@@ -1,41 +1,75 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import MyNavBar from '@/components/MyNavBar.vue'
+import { getConsultOrderPre } from '@/services/consult'
+import { getPatientDetail } from '@/services/user'
+import { useConsultStore } from '@/stores'
+import type { ConsultOrderPreData } from '@/types/consult'
+import type { Patient } from '@/types/user'
+import { onMounted, ref } from 'vue'
+
+const store = useConsultStore()
+
+const payInfo = ref<ConsultOrderPreData>()
+const loadData = async () => {
+  const res = await getConsultOrderPre({
+    type: store.consult.type,
+    illnessType: store.consult.illnessType
+  })
+  payInfo.value = res.data
+  // 设置默认优惠券
+  store.setCoupon(payInfo.value.couponId)
+
+}
+
+const patient = ref<Patient>()
+const loadPatient = async () => {
+  if (!store.consult.patientId) return
+  const res = await getPatientDetail(store.consult.patientId)
+  patient.value = res.data
+}
+
+onMounted(() => {
+  loadData()
+  loadPatient()
+})
+
+const agree = ref(false)
+</script>
 
 <template>
-    <div class="consult-pay-page">
-        <cp-nav-bar title="支付" />
-        <div class="pay-info">
-            <p class="tit">图文问诊 49 元</p>
-            <img class="img"
-                src="@/assets/avatar-doctor.svg" />
-            <p class="desc">
-                <span>极速问诊</span>
-                <span>自动分配医生</span>
-            </p>
-        </div>
-        <van-cell-group>
-            <van-cell title="优惠券"
-                value="-¥10.00" />
-            <van-cell title="积分抵扣"
-                value="-¥10.00" />
-            <van-cell title="实付款"
-                value="¥29.00"
-                class="pay-price" />
-        </van-cell-group>
-        <div class="pay-space"></div>
-        <van-cell-group>
-            <van-cell title="患者信息"
-                value="李富贵 | 男 | 30岁"></van-cell>
-            <van-cell title="病情描述"
-                label="头痛，头晕，恶心"></van-cell>
-        </van-cell-group>
-        <div class="pay-schema">
-            <van-checkbox>我已同意 <span class="text">支付协议</span></van-checkbox>
-        </div>
-        <van-submit-bar button-type="primary"
-            :price="2900"
-            button-text="立即支付"
-            text-align="left" />
+  <div class="consult-pay-page" v-if="payInfo && patient">
+    <MyNavBar title="支付" />
+    <div class="pay-info">
+      <p class="tit">图文问诊 {{ payInfo.payment }} 元</p>
+      <img class="img" src="@/assets/avatar-doctor.svg" />
+      <p class="desc">
+        <span>极速问诊</span>
+        <span>自动分配医生</span>
+      </p>
     </div>
+    <van-cell-group>
+      <van-cell title="优惠券" :value="`-¥${payInfo.couponDeduction}`" />
+      <van-cell title="积分抵扣" :value="`-¥${payInfo.pointDeduction}`" />
+      <van-cell title="实付款" :value="`¥${payInfo.actualPayment}`" class="pay-price" />
+    </van-cell-group>
+    <div class="pay-space"></div>
+    <van-cell-group>
+      <van-cell
+        title="患者信息"
+        :value="`${patient.name} | ${patient.genderValue} | ${patient.age}岁`"
+      ></van-cell>
+      <van-cell title="病情描述" :label="store.consult.illnessDesc"></van-cell>
+    </van-cell-group>
+    <div class="pay-schema">
+      <van-checkbox v-model="agree">我已同意 <span class="text">支付协议</span></van-checkbox>
+    </div>
+    <van-submit-bar
+      button-type="primary"
+      :price="payInfo.actualPayment * 100"
+      button-text="立即支付"
+      text-align="left"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
