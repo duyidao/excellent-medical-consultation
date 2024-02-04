@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { OrderType } from '@/enums'
+
+const { status, countdown = 0 } = defineProps<{
+  status?: OrderType
+  countdown?: number
+}>()
+
+</script>
 
 <template>
     <div class="room-status">
