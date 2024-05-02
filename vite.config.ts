@@ -13,6 +13,9 @@ export default defineConfig({
       iconDirs: [path.resolve(process.cwd(), 'src/icons')],
     })
   ],
+  build: {
+    outDir: 'docs',
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
